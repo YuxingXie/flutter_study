@@ -462,6 +462,8 @@ setState本质上是通知框架该对象的内部状态发生了变化（API:No
 
 ## 第四章 导航 & 路由
 
+### 4.1 实现路由
+
 Flutter的中文文档除了目录可以借鉴外，我感觉啥都没用。我还是自己找资料吧。还是在Flutter的油管频道找到了一个关于go_router的视频：
 https://www.youtube.com/watch?v=b6Z885Z46cU ，在它的留言区上方找到了视频推荐的网站pub.dev，并在里面找到了go_router的入门用法：
 https://pub.dev/documentation/go_router/latest/topics/Get%20started-topic.html
@@ -598,3 +600,73 @@ class ResultScreen extends StatelessWidget {
 这个类是无状态的，无状态的类比有状态的写起来简单一些。同样它的顶层也是Scaffold。
 
 最终代码保存在codes/004.dart。
+
+### 4.2 传递数据
+
+没太多新意，无非是路由uri parameter传递，构造函数传递，没有理解难度。提供一些示例代码即可：
+```dart
+GoRoute(
+  path: '/users/:userId',
+  builder: (context, state) => const UserScreen(id: state.pathParameters['userId']),
+),
+
+GoRoute(
+  path: '/users',
+  builder: (context, state) => const UsersScreen(filter: state.uri.queryParameters['filter']),
+),
+
+
+```
+命名路由
+```dart
+GoRoute(
+   name: 'song',
+   path: 'songs/:songId',
+   builder: /* ... */,
+ ),
+ TextButton(
+  onPressed: () {
+    context.goNamed('song', pathParameters: {'songId': 123});
+  },
+  child: const Text('Go to song 2'),
+),
+```
+
+路由其实需要注意的点还是不少的，不过我自己也没个头绪该如何研究，deeplink这种和Android IOS相关的概念我暂时也不懂，所以就先搞这些。
+大家可以去这里 https://pub.dev/documentation/go_router/latest/topics/Get%20started-topic.html 学习go_router。
+
+另外，资源、媒体、动画、过渡、设计、主题、无障碍、国际化，以及其它一些个Widget，我会放到最后几个章节，前面的章节先研究核心的内容。
+
+## 第五章 数据调用和后端
+
+### 5.1 状态管理
+
+前面介绍了有状态和无状态的Widget，这里本是继续详细讲解状态管理的，不过我打算先跳过去，实在跳不过再回来补习。
+
+skip...
+
+### 5.2 网络 & http
+
+这是跳不过去的，好好学。
+
+<b>跨平台http网络</b>
+
+http package 提供了 http 请求最简单易用的方法。该 package 支持 Android、iOS、macOS、Windows、Linux 以及 Web。
+
+部分平台需要额外的步骤。
+
+android:
+```xml
+<manifest xmlns:android...>
+ ...
+ <uses-permission android:name="android.permission.INTERNET" />
+ <application ...
+</manifest>
+```
+macOs:
+macOS 应用程序必须在相关 *.entitlements 的文件中允许网络访问。
+```xml
+<key>com.apple.security.network.client</key>
+<true/>
+```
+
