@@ -461,3 +461,140 @@ setState本质上是通知框架该对象的内部状态发生了变化（API:No
 跟UI相关的Widget就讲到这里，既然入门了，我想需要的时候自行研究，慢慢积累。
 
 ## 第四章 导航 & 路由
+
+Flutter的中文文档除了目录可以借鉴外，我感觉啥都没用。我还是自己找资料吧。还是在Flutter的油管频道找到了一个关于go_router的视频：
+https://www.youtube.com/watch?v=b6Z885Z46cU ，在它的留言区上方找到了视频推荐的网站pub.dev，并在里面找到了go_router的入门用法：
+https://pub.dev/documentation/go_router/latest/topics/Get%20started-topic.html
+
+go_router包并不在核心包中，需要安装，terminal运行如下命令：
+```text
+  flutter pub add go_router
+```
+安装后可在pubspec.yaml中看到。
+
+根据视频提供的源码：https://github.com/flutter/packages/blob/main/packages/go_router/example/lib/main.dart ，
+我大幅度修改了我的代码结构以实现路由功能。
+
+首先，MyApp这个类就不能提供任何UI widgets了，因为它现在需要作为提供路由的顶层Widget，我把MyApp改写如下：
+```dart
+class MyApp extends StatelessWidget {
+  MyApp({super.key});
+  final GoRouter _router = GoRouter(
+    routes: <RouteBase>[
+      GoRoute(
+        path: '/',
+        builder: (BuildContext context, GoRouterState state) {
+          return MyForm();
+        },
+        routes: <RouteBase>[
+          GoRoute(
+            path: 'result',
+            builder: (BuildContext context, GoRouterState state) {
+              return ResultScreen();
+            },
+          ),
+        ],
+      ),
+    ],
+  );
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp.router(
+      routerConfig: _router,
+    );
+  }
+}
+
+```
+这是部分代码，你照我的拷贝后报错是正常的，我会慢慢完善它。先解释下有哪些变化，有什么玄机。
+
+首先，MyApp由StatefulWidget变成了StatelessWidget。作为管理路由的Widget，它并不需要状态。
+现在MyApp中没有UI部件了。
+
+其次，MyApp仍然是一个MaterialApp，MaterialApp既可以容纳视图，也可以容纳路由。
+
+接下来，登录的输入框和按钮这个页面我移到了MyForm这个新类中，它需要是有状态的，用来保存和更新组件状态的改变，就和之前一样。
+
+```dart
+
+class MyForm extends StatefulWidget {
+  @override
+  State<MyForm> createState() => MyFormState();
+}
+
+class MyFormState extends State<MyForm> {
+  final t1Controller = TextEditingController();
+  final t2Controller = TextEditingController();
+  String? userName;
+  String? pwd;
+  String msg = '';
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Column(children: [
+        TextField(
+          controller: t1Controller,
+          decoration: InputDecoration(
+            border: OutlineInputBorder(),
+            hintText: '用户名',
+          ),
+        ),
+        TextField(
+            controller: t2Controller,
+            obscuringCharacter: '*',
+            obscureText: true,
+            decoration: InputDecoration(
+              border: OutlineInputBorder(),
+              hintText: '密码',
+            )),
+        ElevatedButton(
+            onPressed: () {
+              // setState(() {
+              userName = t1Controller.text;
+              pwd = t2Controller.text;
+              if (userName == 'admin' && pwd == '123') {
+                msg = '登录成功！';
+                context.go('/result');
+              } else {
+                msg = '用户名密码/错误！';
+              }
+              print('用户名：${t1Controller.text},密码：${t2Controller.text}');
+              // });
+              setState(() {});
+            },
+            child: Text('登录')),
+        Text(msg)
+      ]),
+    );
+  }
+}
+```
+这里除了把原来MyApp的UI小部件都移到了MyForm和MyFormState中之外，它的UI最外层不再是MaterialApp了，而是Scaffold。
+作为最外层的MyApp包含了一个MaterialApp，在路由控制之内的小部件都被包含在这个MaterialApp内，所以其它小部件不再需要MaterialApp包裹。
+
+在按钮点击事件onPressed函数中，我加入了一句
+```dart
+  context.go('/result');
+```
+当这句代码执行时，程序根据路由"/result"去匹配配置中builder对应的Widget即ResultScreen，然后跳转过去。
+下面是ResultScreen，我基本照抄了示例的代码，所以看上去比我写的页面漂亮多了：
+```dart
+class ResultScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Sign in result Screen')),
+      body: Center(
+        child: ElevatedButton(
+          onPressed: () => context.go('/'),
+          child: const Text('Go back to the Sign in screen'),
+        ),
+      ),
+    );
+  }
+}
+```
+这个类是无状态的，无状态的类比有状态的写起来简单一些。
+
+最终代码保存在codes/004.dart。
