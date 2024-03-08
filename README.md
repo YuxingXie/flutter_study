@@ -104,11 +104,11 @@ Widget是在太多太杂了，我想在学习阶段一个个弄明白实在是�
 
 
 
-## 2. 主题
+## 第二章 主题
 
 此章留白先
 
-## 3. 交互
+## 第三章 交互
 
 
 ### 3.1 有状态和无状态的 widgets
@@ -328,3 +328,136 @@ body: Column(children: [
           Text(showErr ? '用户名密码/错误' : '') //设计本意是让它根据showErr显示不同的文字
         ]),
 ```
+不出意外的话，我猜会出意外。因为我显示错误信息的Text是这样写的：
+```dart
+Text(showErr ? '用户名密码/错误' : '')
+```
+它并没有从setState函数有任何关联，它只是在初始化时根据showErr的值传入了一个空字符串，并没有在我点击按钮后做出响应。
+
+#### 3.1.3 显示登录错误信息
+
+实际上上面的代码不能运行，是因为我对State的理解是错误的。并不是我让按钮变为有状态的，按钮和消息Text就可以共享状态变化，
+即showErr这个变量的变化。它只是让showErr在按钮内部(比如显示按钮文字的Text是可以用showErr控制)，
+而不会让和它平行的这个显示错误信息的Text共享showErr的变化。
+
+现在问题就好办了，我们稍加改变代码即可，让MyApp变为StatefullWidget，这样整个App都能共享变量(不过在实际项目中应该是不推荐的)：
+```dart
+import 'package:flutter/material.dart';
+
+void main() {
+  print('app will start');
+  runApp(MyApp());
+}
+
+class MyApp extends StatefulWidget {
+  bool showErr = false; //是否显示错误信息
+
+  @override
+  State<MyApp> createState() => MyFormBtnState();
+}
+
+class MyFormBtnState extends State<MyApp> {
+  bool showErr = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: Scaffold(
+        body: Column(children: [
+          TextField(
+              decoration: InputDecoration(
+            border: OutlineInputBorder(),
+            hintText: '用户名',
+          )),
+          TextField(
+              obscuringCharacter: '*',
+              obscureText: true,
+              decoration: InputDecoration(
+                border: OutlineInputBorder(),
+                hintText: '密码',
+              )),
+          ElevatedButton(
+              onPressed: () {
+                showErr = !showErr;
+                print('$showErr');
+                setState(() => showErr = showErr);
+              },
+              child: Text('登录')),
+          Text(showErr ? '用户名密码/错误' : '')
+        ]),
+      ),
+    );
+  }
+
+  printMsg() {
+    showErr = !showErr;
+    print('$showErr');
+  }
+}
+
+```
+
+#### 3.1.4 实现登录逻辑判断
+
+现在还有一个问题，我们要获取两个文本框的值。如何获取文本框的值，官方文档在这里： https://flutter.cn/docs/cookbook/forms/retrieve-input
+
+现在我们按步骤操作。
+
+第一步:MyFormBtnState中为两个文本框定义两个TextEditingController,并分别传入TextField的命名参数controller中：
+```dart
+class MyFormBtnState extends State<MyApp> {
+  bool showErr = false;
+  final t1Controller = TextEditingController();
+  final t2Controller = TextEditingController();
+  //other codes....
+  TextField(
+            controller: t1Controller,
+            //other codes...
+            ),
+          ),
+  TextField(
+      controller: t2Controller,
+      //other codes...
+      ),
+      //other codes...
+}
+```
+第二步：通过获得文本框值
+```dart
+print('用户名：${t1Controller.text},密码：${t2Controller.text}');
+```
+
+现在我们实现登录逻辑，当用户名为admin,密码为123时验证通过，否则显示错误。
+```dart
+ onPressed: () {
+                //userName,pwd,msg都是定义在MyFormBtnState中的3个实例变量，定义的代码就不写出来了
+                userName = t1Controller.text;
+                pwd = t2Controller.text;
+                if (userName == 'admin' && pwd == '123') {
+                  msg = '登录成功！';
+                } else {
+                  msg = '用户名密码/错误！';
+                }
+                setState(() {});
+              },
+```
+把逻辑写在setState函数体内也是可以的：
+
+```dart
+setState(() {
+  userName = t1Controller.text;
+    pwd = t2Controller.text;
+    if (userName == 'admin' && pwd == '123') {
+      msg = '登录成功！';
+    } else {
+      msg = '用户名密码/错误！';
+    }
+});
+```
+setState本质上是通知框架该对象的内部状态发生了变化（API:Notify the framework that the internal state of this object has changed.）。
+
+现在似乎基本完成了，也说明了有状态Widget是什么东西，如何共享状态等内容，保存代码在codes/003.dart供参考。
+
+跟UI相关的Widget就讲到这里，既然入门了，我想需要的时候自行研究，慢慢积累。
+
+## 第四章 导航 & 路由
