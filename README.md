@@ -595,6 +595,6 @@ class ResultScreen extends StatelessWidget {
   }
 }
 ```
-这个类是无状态的，无状态的类比有状态的写起来简单一些。
+这个类是无状态的，无状态的类比有状态的写起来简单一些。同样它的顶层也是Scaffold。
 
 最终代码保存在codes/004.dart。
