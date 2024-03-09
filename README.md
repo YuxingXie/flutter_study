@@ -648,6 +648,8 @@ GoRoute(
 
 ### 5.1 why Riverpod?
 
+Riverpod是一个庞大的主题，我学了一小会发现不是一时半会能搞明白的，所以放弃了，但是学过的部分先留在这里。这一章先跳过。
+
 本节内容纯翻译自https://riverpod.dev/docs/introduction/why_riverpod
 
 Riverpod (Provider的变体)是一个用于Flutter/Dart的响应式缓存框架。
@@ -769,7 +771,17 @@ void main() {
 ```
 这样做将为整个应用程序启用Riverpod。
 
-<b>step2:在“提供者”中执行网络请求</b>
+<b>step2:在“Provider”中执行网络请求</b>
+举个例子，让我们制作一个简单的应用程序，它建议在无聊的时候做一个随机的活动。
+
+为此，我们将使用Bored API。特别是，我们将在/api/activity端点上执行GET请求。这将返回一个JSON对象，我们将把它解析为一个Dart类实例。
+下一步就是在UI中显示这个活动。我们还将确保在发出请求时呈现加载状态，并优雅地处理错误。
+
+听起来不错吗?让我们开始吧!
+
+不搞了，名堂太多了。
+
+
 
 ## 第六章 数据调用和后端
 
