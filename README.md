@@ -637,15 +637,144 @@ GoRoute(
 
 另外，资源、媒体、动画、过渡、设计、主题、无障碍、国际化，以及其它一些个Widget，我会放到最后几个章节，前面的章节先研究核心的内容。
 
-## 第五章 数据调用和后端
 
-### 5.1 状态管理
+## 第五章 状态管理
 
 前面介绍了有状态和无状态的Widget，这里本是继续详细讲解状态管理的，不过我打算先跳过去，实在跳不过再回来补习。
 
-skip...
+但是现在我回来了，说明这个是跳不过去的槛。为什么呢？因为我之前学习到的State管理的状态，在调用setState时会重绘UI，
+它是Flutter内置的状态管理。然而在Flutter的官方油管频道，根本提都不提它，而是给大家推出了一个叫Riverpod的东西来进行状态管理。
+话不多说，我就来研究下Riverpod，参考资料 https://riverpod.dev/docs/introduction/getting_started
 
-### 5.2 网络 & http
+### 5.1 why Riverpod?
+
+本节内容纯翻译自https://riverpod.dev/docs/introduction/why_riverpod
+
+Riverpod (Provider的变体)是一个用于Flutter/Dart的响应式缓存框架。
+
+使用声明式和响应式编程，Riverpod为你处理了大部分应用程序的逻辑。它可以使用内置的错误处理和缓存来执行网络请求，同时在必要时自动重新获取数据。
+
+现代应用程序很少提供呈现其用户界面所需的所有信息。相反，数据通常是从服务器异步获取的。
+问题是，处理异步代码很困难。尽管Flutter提供了一些方法来创建状态变量并在更改时刷新UI，但它仍然相当有限。一些挑战仍未解决:
+* 异步请求需要在本地缓存，因为每当UI更新时重新执行它们是不合理的。
+* 因为我们有一个缓存，如果我们不小心，我们的缓存可能会过期。
+* 我们还需要处理错误和加载状态
+
+算了，大家还是自己去看吧。
+
+### 5.2 开始Riverpod
+
+#### 5.2.1 安装
+```text
+flutter pub add flutter_riverpod
+flutter pub add riverpod_annotation
+flutter pub add dev:riverpod_generator
+flutter pub add dev:build_runner
+flutter pub add dev:custom_lint
+flutter pub add dev:riverpod_lint
+```
+analysis_options.yaml:
+```yaml
+analyzer:
+  plugins:
+    - custom_lint
+```
+再安装个VSCode的扩展，Flutter Riverpod Snippets：
+https://marketplace.visualstudio.com/items?itemName=robert-brunhage.flutter-riverpod-snippets
+
+本人向来不喜欢描述这些按部就班的事情，大家自己去弄吧。
+
+#### 5.2.2 hello world!
+下面的代码如果出现红波浪：
+
+```dart
+part 'main.g.dart';
+```
+
+错误是Target of URI hasn't been generated: 'package:flutter_study/main.g.dart'.用了pub get这些命令试图修复结果失败。
+这就没意思了。后来搞定了，原来是安装后要执行下面两行命令，我还以为要未捷身先死了呢。
+```terminal
+flutter pub get
+flutter pub run build_runner watch
+```
+运行后发现生成和修改了几个文件，其中一个生成的文件就是main.g.dart。
+
+
+ok继续看代码：
+```dart
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+
+part 'main.g.dart';
+
+// We create a "provider", which will store a value (here "Hello world").
+// By using a provider, this allows us to mock/override the value exposed.
+@riverpod
+String helloWorld(HelloWorldRef ref) {
+  return 'Hello world';
+}
+
+void main() {
+  runApp(
+    // For widgets to be able to read providers, we need to wrap the entire
+    // application in a "ProviderScope" widget.
+    // This is where the state of our providers will be stored.
+    ProviderScope(
+      child: MyApp(),
+    ),
+  );
+}
+
+// Extend ConsumerWidget instead of StatelessWidget, which is exposed by Riverpod
+class MyApp extends ConsumerWidget {
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final String value = ref.watch(helloWorldProvider);
+
+    return MaterialApp(
+      home: Scaffold(
+        appBar: AppBar(title: const Text('Example')),
+        body: Center(
+          child: Text(value),
+        ),
+      ),
+    );
+  }
+}
+
+```
+注意几点，第一，runApp不提供MyApp为参数了，而是包在了ProviderScope的child命名参数中。其次MyApp现在继承自ConsumerWidget，
+它是一个StatefulWidget，但是它应该重写了createState方法，并定义了一个新的build方法，该方法传入了一个WidgetRef位置参数，
+我们可以用ref.watch(helloWorldProvider)获得“Hello world”这个字符串。这个helloWorldProvider又是啥呢？
+它定义在main.g.dart文件中，目前看不懂。
+
+### 5.3 Riverpod要点
+
+#### 5.3.1 发送网络请求
+
+<b>step1:设置ProviderScope</b>
+
+在我们开始进行网络请求之前，请确保在应用程序的根目录中添加了ProviderScope。
+```dart
+void main() {
+  runApp(
+    // To install Riverpod, we need to add this widget above everything else.
+    // This should not be inside "MyApp" but as direct parameter to "runApp".
+    ProviderScope(
+      child: MyApp(),
+    ),
+  );
+}
+```
+这样做将为整个应用程序启用Riverpod。
+
+<b>step2:在“提供者”中执行网络请求</b>
+
+## 第六章 数据调用和后端
+
+
+### 6.1 网络 & http
 
 这是跳不过去的，好好学。
 
@@ -663,7 +792,7 @@ android:
  <application ...
 </manifest>
 ```
-macOs:
+macOS:
 macOS 应用程序必须在相关 *.entitlements 的文件中允许网络访问。
 ```xml
 <key>com.apple.security.network.client</key>
