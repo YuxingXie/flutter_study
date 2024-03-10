@@ -953,3 +953,109 @@ Future<void> main() async {
 </tr>
 </tbody>
 </table>
+
+#### 6.2.4 Configuration 
+要使用HTTP client 实现，而不是默认的，你必须:
+* 将HTTP client 作为依赖项添加。
+* 配置HTTP client 。
+* 将HTTP client连接到使用它的代码。
+
+##### 1.将HTTP client 作为依赖项添加
+
+要将与Dart SDK兼容的包添加到项目中，请使用Dart pub add。
+
+例如:
+```text
+# Replace  "fetch_client" with the package that you want to use.
+dart pub add fetch_client
+```
+要添加需要Flutter SDK的包，请使用Flutter pub add。
+
+例如:
+```text
+# Replace  "cupertino_http" with the package that you want to use.
+flutter pub add cupertino_http
+```
+
+##### 2.配置HTTP client
+不同的package:http Client实现可能需要不同的配置选项。
+
+添加一个返回正确配置的Client的函数。您可以在不同的平台上返回不同的Client。
+
+例如:
+```dart
+Client httpClient() {
+  if (Platform.isAndroid) {
+    final engine = CronetEngine.build(
+        cacheMode: CacheMode.memory,
+        cacheMaxSize: 1000000);
+    return CronetClient.fromCronetEngine(engine);
+  }
+  if (Platform.isIOS || Platform.isMacOS) {
+    final config = URLSessionConfiguration.ephemeralSessionConfiguration()
+      ..cache = URLCache.withCapacity(memoryCapacity: 1000000);
+    return CupertinoClient.fromSessionConfiguration(config);
+  }
+  return IOClient();
+}
+```
+配置例子： https://github.com/dart-lang/http/tree/master/pkgs/flutter_http_example
+
+<b>Supporting browser and native</b>
+
+如果您的应用程序可以在浏览器和本机中运行，则必须将浏览器和本机配置放在单独的文件中，并根据平台导入正确的文件。
+
+例如:
+```dart
+// -- http_client_factory.dart
+Client httpClient() {
+  if (Platform.isAndroid) {
+    return CronetClient.defaultCronetEngine();
+  }
+  if (Platform.isIOS || Platform.isMacOS) {
+    return CupertinoClient.defaultSessionConfiguration();
+  }
+  return IOClient();
+}
+// -- http_client_factory_web.dart
+Client httpClient() => FetchClient();
+// -- main.dart
+import 'http_client_factory.dart'
+    if (dart.library.js_interop) 'http_client_factory_web.dart'
+
+// The correct `httpClient` will be available.
+```
+
+##### 3.将HTTP client连接到使用它的代码
+
+将Client传递到使用它的地方的最好方法是通过参数显式地传递。
+
+例如:
+```dart
+void main() {
+  final client = httpClient();
+  fetchAlbum(client, ...);
+}```
+
+在Flutter中，您可以使用许多状态管理方法中的一种。
+
+如果你依赖于使用顶级函数(例如http.post)或调用Client()构造函数的代码，那么你可以使用runWithClient来确保使用正确的Client。
+当产生一个Isolate时，它不会从调用区域继承任何变量，因此需要在每个使用package:http的隔离中使用runWithClient。
+
+通过在环境中定义no_default_http_client=true，可以确保只使用已显式配置的客户机。这也将允许删除默认的Client实现，从而减小应用程序的大小。
+```text
+$ flutter build appbundle --dart-define=no_default_http_client=true ...
+$ dart compile exe --define=no_default_http_client=true ...
+```
+
+到这里pub.dev上的资料就结束了，好像根本没有理解难点，我仅仅纯翻译了一下而已。代码也没有去测试，因为不想去服务端代码。
+
+
+### 6.3 dio
+
+因为http过于简单，但是功能也似乎简单了点。于是看了看dio，还是不错的，
+除了post,get还支持全局配置、Restful API、FormData、拦截器、 请求取消、Cookie 管理、文件上传/下载、超时、自定义适配器、转换器等。
+
+最棒的是它有中文资料：https://github.com/cfug/dio/blob/main/dio/README-ZH.md
+
+虽然很不错，但我浏览了一番文档，也没有理解难度，所以大家可以自己去看文档。
