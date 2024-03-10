@@ -646,9 +646,11 @@ GoRoute(
 它是Flutter内置的状态管理。然而在Flutter的官方油管频道，根本提都不提它，而是给大家推出了一个叫Riverpod的东西来进行状态管理。
 话不多说，我就来研究下Riverpod，参考资料 https://riverpod.dev/docs/introduction/getting_started
 
-### 5.1 why Riverpod?
 
 Riverpod是一个庞大的主题，我学了一小会发现不是一时半会能搞明白的，所以放弃了，但是学过的部分先留在这里。这一章先跳过。
+
+### 5.1 why Riverpod?
+
 
 本节内容纯翻译自https://riverpod.dev/docs/introduction/why_riverpod
 
@@ -810,4 +812,144 @@ macOS 应用程序必须在相关 *.entitlements 的文件中允许网络访问�
 <key>com.apple.security.network.client</key>
 <true/>
 ```
+### 6.2 获取网络数据
 
+原本打算在中文网按照它的示例学习，不过根据该网一贯的恶行，我先运行了它的完整示例代码，确保我不会学个寂寞。
+结果你猜怎么着？出现了语法错误！！！！！没错，不是缺失包这种错误，是语法错误。我感谢你whole family eighteen generations。
+
+与http请求相关的包有http和dio两个，看上去http更简单一点，所以选择它。
+
+我现在参考的是pub.dev上的资料：https://pub.dev/packages/http
+
+#### 6.2.1 安装http
+
+安装：
+```terminal
+> flutter pub add http
+```
+这个包包含一组高级函数和类，可以很容易地使用HTTP资源。它是多平台的(移动、桌面和浏览器)，支持多种实现。
+
+#### 6.2.2 使用http
+
+最简单的用法：
+```dart
+import 'package:http/http.dart' as http;
+
+var url = Uri.https('example.com', 'whatsit/create');
+var response = await http.post(url, body: {'name': 'doodle', 'color': 'blue'});
+print('Response status: ${response.statusCode}');
+print('Response body: ${response.body}');
+
+print(await http.read(Uri.https('example.com', 'foobar.txt')));
+```
+android和macOS需要一些配置才能进行网络请求。
+
+如果向同一台服务器发出多个请求，可以使用Client保持打开持久连接，而不是发出一次性请求。如果您这样做，请确保在完成后关闭客户端:
+```dart
+var client = http.Client();
+try {
+  var response = await client.post(
+      Uri.https('example.com', 'whatsit/create'),
+      body: {'name': 'doodle', 'color': 'blue'});
+  var decodedResponse = jsonDecode(utf8.decode(response.bodyBytes)) as Map;
+  var uri = Uri.parse(decodedResponse['uri'] as String);
+  print(await client.get(uri));
+} finally {
+  client.close();
+}
+```
+疑问，http请求不是长连接，如何保持持久连接？
+
+您还可以通过自己创建Request或StreamedRequest对象并将它们传递给Client.send来对请求和响应施加更细粒度的控制。
+这个包被设计成可组合的。这使得外部库可以很容易地相互协作，向其中添加行为。希望添加行为的库应该创建一个BaseClient的子类，该子类包装另一个客户端并添加所需的行为:
+```dart
+class UserAgentClient extends http.BaseClient {
+  final String userAgent;
+  final http.Client _inner;
+
+  UserAgentClient(this.userAgent, this._inner);
+
+  Future<http.StreamedResponse> send(http.BaseRequest request) {
+    request.headers['user-agent'] = userAgent;
+    return _inner.send(request);
+  }
+}
+```
+
+#### 6.2.3 重试请求
+包http/retry.dart提供了一个类RetryClient来包装底层http。透明地重试失败请求的客户端。
+```dart
+import 'package:http/http.dart' as http;
+import 'package:http/retry.dart';
+
+Future<void> main() async {
+  final client = RetryClient(http.Client());
+  try {
+    print(await client.read(Uri.http('example.org', '')));
+  } finally {
+    client.close();
+  }
+}
+```
+默认情况下，这将重试任何响应状态码为503(表示服务器尚未处于可以接受请求的状态)的请求，最多重试三次。
+它在第一次重试之前等待500ms，并且每次延迟增加1.5倍。所有这些都可以使用RetryClient()构造函数进行定制。
+
+#### 6.2.4 Choosing an implementation
+该包有多种实现:http客户端接口。默认情况下，package:http在web上使用BrowserClient，在所有其他平台上使用iocclient。您可以根据应用程序的需要选择不同的Client实现。
+除了几行配置之外，您可以在不更改应用程序代码的情况下更改实现。
+
+一些得到良好支持的实现有:
+<table>
+<thead>
+<tr>
+<th>Implementation</th>
+<th>Supported Platforms</th>
+<th>SDK</th>
+<th>Caching</th>
+<th>HTTP3/QUIC</th>
+<th>Platform Native</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>package:http</code> — <a href="https://pub.dev/documentation/http/latest/io_client/IOClient-class.html"><code>IOClient</code></a></td>
+<td>Android, iOS, Linux, macOS, Windows</td>
+<td>Dart, Flutter</td>
+<td>❌</td>
+<td>❌</td>
+<td>❌</td>
+</tr>
+<tr>
+<td><code>package:http</code> — <a href="https://pub.dev/documentation/http/latest/browser_client/BrowserClient-class.html"><code>BrowserClient</code></a></td>
+<td>Web</td>
+<td>Dart, Flutter</td>
+<td>―</td>
+<td>✅︎</td>
+<td>✅︎</td>
+</tr>
+<tr>
+<td><a href="https://pub.dev/packages/cupertino_http"><code>package:cupertino_http</code></a> — <a href="https://pub.dev/documentation/cupertino_http/latest/cupertino_http/CupertinoClient-class.html"><code>CupertinoClient</code></a></td>
+<td>iOS, macOS</td>
+<td>Flutter</td>
+<td>✅︎</td>
+<td>✅︎</td>
+<td>✅︎</td>
+</tr>
+<tr>
+<td><a href="https://pub.dev/packages/cronet_http"><code>package:cronet_http</code></a> — <a href="https://pub.dev/documentation/cronet_http/latest/cronet_http/CronetClient-class.html"><code>CronetClient</code></a></td>
+<td>Android</td>
+<td>Flutter</td>
+<td>✅︎</td>
+<td>✅︎</td>
+<td>―</td>
+</tr>
+<tr>
+<td><a href="https://pub.dev/packages/fetch_client"><code>package:fetch_client</code></a> — <a href="https://pub.dev/documentation/fetch_client/latest/fetch_client/FetchClient-class.html"><code>FetchClient</code></a></td>
+<td>Web</td>
+<td>Dart, Flutter</td>
+<td>✅︎</td>
+<td>✅︎</td>
+<td>✅︎</td>
+</tr>
+</tbody>
+</table>
