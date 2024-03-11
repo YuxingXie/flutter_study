@@ -1080,15 +1080,41 @@ $ dart compile exe --define=no_default_http_client=true ...
 Widget
   ProxyWidget
     InheritedWidget
+      BottomNavigationBarTheme
+      ButtonBarTheme
+      CheckboxTheme
+      CupertinoUserInterfaceLevel
+      DataTableTheme
       DefaultAssetBundle
-      InheritedTheme 
+      Directionality
+      DropdownButtonHideUnderline
+      FlexibleSpaceBarSettings
+      FocusTraversalOrder
+      HeroControllerScope
+      InheritedModel
+      InheritedNotifier
+        AutocompleteHighlightedOption
+      InheritedTheme
         DefaultSelectionStyle
         DefaultTextHeightBehavior
         DefaultTextStyle
         Directionality
-      InheritedNotifier
-        AutocompleteHighlightedOption
+      LookupBoundary
+      MenuAcceleratorCallbackBinding
+      PrimaryScrollController
+      RadioTheme
+      ScrollConfiguration
+      SearchBarTheme
+      SelectionRegistrarScope
+      SwitchTheme
+      UnmanagedRestorationScope
     ParentDataWidget
+      Flexible
+      KeepAlive
+      LayoutId
+      Positioned
+      SliverCrossAxisExpanded
+      TableCell
     NotificationListener
       Flexible 
         Expanded 
@@ -1449,6 +1475,7 @@ Widget
     ObstructingPreferredSizeWidget
     PreferredSize
     Tab
-    TabBar  
+    TabBar
+  ViewCollection
 
 ```
