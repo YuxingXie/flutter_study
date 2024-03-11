@@ -1097,6 +1097,14 @@ $ dart compile exe --define=no_default_http_client=true ...
 
 ## 第九章 Flutter命令行
 
+想要查看一个命令的详细用法，示例如下：
+
+```terminal
+
+# 显示 flutter devices命令的详细用法
+flutter --help devices  
+
+```
 <table class="table table-striped nowrap">
   <thead>
     <tr>
