@@ -1070,412 +1070,197 @@ $ dart compile exe --define=no_default_http_client=true ...
 ## 第七章 布局
 
 先说下Flutter下两大风格的组件(集)，一个是Material,它由Google提出，可以理解为Android风格的组件；另一个是Cupertino，它是IOS风格的组件。
+根据目前的经验，Flutter程序的入口的runApp函数需要在顶层传入这两个Widget之一。
+
+前面我们常见的Scaffold也是一个常用的Widget，它一般被默认为MaterialApp的顶级容器，会填充整个屏幕大小。Scaffold不要嵌套使用，
+在Scaffold中下列Widget会找到自己合适的位置：
+* AppBar
+* BottomAppBar
+* FloatingActionButton
+* Drawer
+* BottomNavigationBar
+* BottomSheet
+* SnackBar
+* MaterialBanner
 
 在网上到处找各个Widgets之间的继承关系，而且文档和库文件也不提示一个类有什么子类，我只好做一个基础工作，一个个手动列出所有能碰到的Widget的继承关系。
-
+因为名单较长，我将其放在了documents/widget.yaml中。
 为什么要这么不嫌麻烦的列出这么多Widget呢，我想大多数Widget可以“望文生义”，看名字基本能猜个八九不离十它们是干什么的，
-所以这是一个很好的开发向导。
+所以这是一个很好的开发向导,就是名单太长了点。
 
-```yaml
-Widget
-  ProxyWidget
-    InheritedWidget
-      BottomNavigationBarTheme
-      ButtonBarTheme
-      CheckboxTheme
-      CupertinoUserInterfaceLevel
-      DataTableTheme
-      DefaultAssetBundle
-      Directionality
-      DropdownButtonHideUnderline
-      FlexibleSpaceBarSettings
-      FocusTraversalOrder
-      HeroControllerScope
-      InheritedModel
-      InheritedNotifier
-        AutocompleteHighlightedOption
-      InheritedTheme
-        DefaultSelectionStyle
-        DefaultTextHeightBehavior
-        DefaultTextStyle
-        Directionality
-      LookupBoundary
-      MenuAcceleratorCallbackBinding
-      PrimaryScrollController
-      RadioTheme
-      ScrollConfiguration
-      SearchBarTheme
-      SelectionRegistrarScope
-      SwitchTheme
-      UnmanagedRestorationScope
-    ParentDataWidget
-      Flexible
-      KeepAlive
-      LayoutId
-      Positioned
-      SliverCrossAxisExpanded
-      TableCell
-    NotificationListener
-      Flexible 
-        Expanded 
-  RootWidget   
-  StatefulWidget
-    ActionListener
-    Actions
-    AndroidView
-    AndroidViewSurface
-    AnimatedCrossFade
-    AnimatedGrid
-    AnimatedList
-    AnimatedSize
-    AnimatedSwitcher
-    AnimatedWidget
-    AppBar
-    AppKitView
-    AutofillGroup
-    AutomaticKeepAlive
-    BackButtonListener
-    Banner
-    BottomAppBar
-    BottomNavigationBar
-    BottomSheet
-    ButtonStyleButton
-    CalendarDatePicker
-    Checkbox
-    CupertinoActionSheet
-    CupertinoActivityIndicator
-    CupertinoAlertDialog
-    CupertinoApp
-    CupertinoButton
-    CupertinoCheckbox
-    CupertinoContextMenu
-    CupertinoContextMenuAction
-    CupertinoDatePicker
-    CupertinoDesktopTextSelectionToolbarButton
-    CupertinoListTile
-    CupertinoNavigationBar
-    CupertinoPageScaffold
-    CupertinoPicker
-    CupertinoRadio
-    CupertinoSearchTextField
-    CupertinoSegmentedControl
-    CupertinoSlider
-    CupertinoSlidingSegmentedControl
-    CupertinoSliverNavigationBar
-    CupertinoSliverRefreshControl
-    CupertinoSwitch
-    CupertinoTabScaffold
-    CupertinoTabView
-    CupertinoTextField
-    CupertinoTextMagnifier
-    CupertinoTextSelectionToolbarButton
-    CupertinoTimerPicker
-    DatePickerDialog
-    DateRangePickerDialog
-    DefaultTabController
-    Dismissible
-    Draggable
-    DraggableScrollableActuator
-    DraggableScrollableSheet
-    DragTarget
-    DrawerController
-    DropdownButton
-    DropdownMenu
-    DualTransitionBuilder
-    EditableText
-    ExpandIcon
-    ExpansionPanelList
-    ExpansionTile
-    FadeInImage
-    FlexibleSpaceBar
-    Focus
-    FocusableActionDetector
-    FocusTraversalGroup
-    Form
-    FormField
-    FutureBuilder
-    GlowingOverscrollIndicator
-    Hero
-    Image
-    ImplicitlyAnimatedWidget
-    Ink
-    InputDatePickerFormField
-    InputDecorator
-    InteractiveViewer
-    LicensePage
-    ListWheelScrollView
-    Localizations
-    Material
-    MaterialApp
-    MaterialBanner
-    MenuAcceleratorLabel
-    MenuAnchor
-    MenuItemButton
-    MergeableMaterial
-    NavigationRail
-    Navigator
-    NavigatorPopHandler
-    NestedScrollView
-    Overlay
-    OverlayPortal
-    PageView
-    PaginatedDataTable
-    PlatformMenuBar
-    PlatformViewLink
-    PopScope
-    PopupMenuButton
-    PopupMenuEntry
-    ProgressIndicator
-    Radio
-    RangeSlider
-    RawAutocomplete
-    RawChip
-    RawGestureDetector
-    RawKeyboardListener(Deprecated)
-    RawMaterialButton
-    RawScrollbar
-    RefreshIndicator
-    ReorderableList
-    ReorderableListView
-    RestorationScope
-    RootRestorationScope
-    Router
-    Scaffold
-    ScaffoldMessenger
-    Scrollable
-    ScrollNotificationObserver
-    SearchAnchor
-    SearchBar
-    SegmentedButton
-    SelectableRegion
-    SelectableText
-    SelectionArea
-    SelectionContainer
-    SemanticsDebugger
-    SharedAppData
-    ShortcutRegistrar
-    Shortcuts
-    Slider
-    SliverAnimatedGrid
-    SliverAnimatedList
-    SliverAppBar
-    SliverReorderableList
-    SnackBar
-    SnackBarAction
-    StatefulBuilder
-    StatusTransitionWidget
-    Stepper
-    StreamBuilderBase
-    StretchingOverscrollIndicator
-    SubmenuButton
-    TabBar
-    TabBarView
-    TextField
-    TextMagnifier
-    TextSelectionGestureDetector
-    TickerMode
-    TimePickerDialog
-    Tooltip
-    TwoDimensionalScrollable
-    UiKitView
-    UndoHistory
-    UniqueWidget
-    UserAccountsDrawerHeader
-    ValueListenableBuilder
-    WidgetInspector
-    WidgetsApp
-    WillPopScope(Deprecated)
-    YearPicker
-  StatelessWidget
-    AboutDialog
-    AboutListTile
-    ActionChip
-    AdaptiveTextSelectionToolbar
-    AlertDialog
-    AnimatedIcon
-    Autocomplete
-    BackButton
-    BackButtonIcon
-    Badge
-    Builder
-    ButtonBar
-    CallbackShortcuts
-    Card
-    CheckboxListTile
-    CheckboxMenuButton
-    CheckedModeBanner
-    Chip
-    ChoiceChip
-    CircleAvatar
-    CloseButton
-    CloseButtonIcon
-    Container
-    CupertinoActionSheetAction
-    CupertinoAdaptive
-    TextSelectionToolbar
-    CupertinoDesktop
-    TextSelectionToolbar
-    CupertinoDialogAction
-    CupertinoFormRow
-    CupertinoFormSection
-    CupertinoFullscreenDialogTransition
-    CupertinoListSection
-    CupertinoListTileChevron
-    CupertinoMagnifier
-    CupertinoNavigationBarBackButton
-    CupertinoPageTransition
-    CupertinoPickerDefaultSelectionOverlay
-    CupertinoPopupSurface
-    CupertinoSpellCheckSuggestionsToolbar
-    CupertinoTabBar
-    CupertinoTextSelectionToolbar
-    CupertinoTheme
-    DataTable
-    DefaultTextEditingShortcuts
-    DesktopTextSelectionToolbar
-    DesktopTextSelectionToolbarButton
-    Dialog
-    DisplayFeatureSubScreen
-    Divider
-    Drawer
-    DrawerButton
-    DrawerButtonIcon
-    DrawerHeader
-    DropdownMenuItem
-    EndDrawerButton
-    EndDrawerButtonIcon
-    ExcludeFocus
-    ExcludeFocusTraversal
-    FilterChip
-    FloatingActionButton
-    FlutterLogo
-    GestureDetector
-    GridPaper
-    GridTile
-    GridTileBar
-    HeroMode
-    HtmlElementView
-    Icon
-    IconButton
-    ImageIcon
-    IndexedStack
-    InkResponse
-    InputChip
-    KeyboardListener
-    KeyedSubtree
-    ListTile
-    Magnifier
-    MaterialButton
-    MenuBar
-    ModalBarrier
-    NavigationBar
-    NavigationDestination
-    NavigationDrawer
-    NavigationDrawerDestination
-    NavigationIndicator
-    NavigationToolbar
-    OrientationBuilder
-    PageStorage
-    Placeholder
-    PlatformSelectableRegionContextMenu
-    PositionedDirectional
-    PreferredSize
-    RadioListTile
-    RadioMenuButton
-    RawMagnifier
-    ReorderableDragStartListener
-    SafeArea
-    Scrollbar
-    ScrollView
-    SimpleDialog
-    SimpleDialogOption
-    SingleChildScrollView
-    SliverConstrainedCrossAxis
-    SliverFillRemaining
-    SliverFillViewport
-    SliverPersistentHeader
-    SliverSafeArea
-    SliverVisibility
-    Spacer
-    SpellCheckSuggestionsToolbar
-    Switch
-    SwitchListTile
-    Tab
-    TabPageSelector
-    TabPageSelectorIndicator
-    Text
-    TextSelectionToolbar
-    TextSelectionToolbarTextButton
-    Theme
-    Title
-    ToggleButtons
-    TooltipVisibility
-    TwoDimensionalScrollView
-    UnconstrainedBox
-    VerticalDivider
-    View
-    ViewAnchor
-    Visibility
-  RenderObjectWidget
-    ConstrainedLayoutBuilder
-    LeafRenderObjectWidget
-      ErrorWidget
-    ListWheelViewport
-    MultiChildRenderObjectWidget
-      CustomMultiChildLayout
-      Flex 
-        Column
-        Row  
-      CustomMultiChildLayout  
-      Flow
-      ListBody
-      OverflowBar
-      RichText
-      ShrinkWrappingViewport
-      SliverCrossAxisGroup
-      SliverMainAxisGroup
-      Stack
-      Viewport
-      Wrap 
-    RenderObjectToWidgetAdapter
-    SingleChildRenderObjectWidget
-      AbsorbPointer
-      Align
-        Center
-      AspectRatio
-      BackdropFilter
-      Baseline
-      BlockSemantics
-      ClipOval
-      ClipPath
-      ClipRect
-      ClipRRect
-      ColoredBox
-      ColorFiltered
-      CompositedTransformFollower
-      CompositedTransformTarget
-      ConstrainedBox
-      ConstraintsTransformBox
-      CustomPaint
-      CustomSingleChildLayout
-      DecoratedBox
-      DecoratedSliver
-      ExcludeSemantics
-      FadeTransition
-      FittedBox
-      ImageFiltered
-    SliverWithKeepAliveWidget
-    SlottedMultiChildRenderObjectWidget
-    Table
-    TwoDimensionalViewport
-    ConstrainedLayoutBuilder
-  PreferredSizeWidget 
-    AppBar
-    CupertinoTabBar
-    ObstructingPreferredSizeWidget
-    PreferredSize
-    Tab
-    TabBar
-  ViewCollection
+布局Widgets分为三类：
+* Single-child layout widgets:单个子widget
+* Multi-child layout widgets：多个子widgets
+* Sliver widgets：与滚动条相关
 
-```
+## 第八章 主题
+
+## 第九章 Flutter命令行
+
+<table class="table table-striped nowrap">
+  <thead>
+    <tr>
+      <th>
+<t>命令</t>
+</th>
+      <th>
+<t>示例</t>
+</th>
+      <th>
+<t>描述</t>
+</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>analyze</td>
+      <td><code class="language-plaintext highlighter-rouge">flutter analyze -d &lt;DEVICE_ID&gt;</code></td>
+      <td><nt-wrapper>分析项目的 Dart 源码。<br>该命令用来替代 <a href="https://dart.cn/tools/dart-analyze"><code class="language-plaintext highlighter-rouge">dart analyze</code></a>。</nt-wrapper></td>
+    </tr>
+    
+    <tr>
+      <td>assemble</td>
+      <td><code class="language-plaintext highlighter-rouge">flutter assemble -o &lt;DIRECTORY&gt;</code></td>
+      <td><nt-wrapper>组建和构建 Flutter 资源。</nt-wrapper></td>
+    </tr>
+    
+    <tr>
+      <td>attach</td>
+      <td><code class="language-plaintext highlighter-rouge">flutter attach -d &lt;DEVICE_ID&gt;</code></td>
+      <td><nt-wrapper>连接到运行中的应用程序。</nt-wrapper></td>
+    </tr>
+    
+    <tr>
+      <td>bash-completion</td>
+      <td><code class="language-plaintext highlighter-rouge">flutter bash-completion</code></td>
+      <td><nt-wrapper>输出 Shell 命令行设置的脚本。</nt-wrapper></td>
+    </tr>
+    
+    <tr>
+      <td>build</td>
+      <td><code class="language-plaintext highlighter-rouge">flutter build &lt;DIRECTORY&gt;</code></td>
+      <td><nt-wrapper>Flutter 构建命令。</nt-wrapper></td>
+    </tr>
+    
+    <tr>
+      <td>channel</td>
+      <td><code class="language-plaintext highlighter-rouge">flutter channel &lt;CHANNEL_NAME&gt;</code></td>
+      <td><nt-wrapper>列出或切换 Flutter 的渠道分支</nt-wrapper></td>
+    </tr>
+    
+    <tr>
+      <td>clean</td>
+      <td><code class="language-plaintext highlighter-rouge">flutter clean</code></td>
+      <td><nt-wrapper>删除 <code class="language-plaintext highlighter-rouge">build/</code> 和 <code class="language-plaintext highlighter-rouge">.dart_tool/</code> 目录。</nt-wrapper></td>
+    </tr>
+    
+    <tr>
+      <td>config</td>
+      <td><code class="language-plaintext highlighter-rouge">flutter config --build-dir=&lt;DIRECTORY&gt;</code></td>
+      <td><nt-wrapper>设置 Flutter 配置项。如果你需要删除一个配置项，请将该配置项的值置空。</nt-wrapper></td>
+    </tr>
+    
+    <tr>
+      <td>create</td>
+      <td><code class="language-plaintext highlighter-rouge">flutter create &lt;DIRECTORY&gt;</code></td>
+      <td><nt-wrapper>创建一个新项目。</nt-wrapper></td>
+    </tr>
+    
+    <tr>
+      <td>custom-devices</td>
+      <td><code class="language-plaintext highlighter-rouge">flutter custom-devices list</code></td>
+      <td><nt-wrapper>添加、删除、列出或重置定制的设备。</nt-wrapper></td>
+    </tr>
+    
+    <tr>
+      <td>devices</td>
+      <td><code class="language-plaintext highlighter-rouge">flutter devices -d &lt;DEVICE_ID&gt;</code></td>
+      <td><nt-wrapper>列出所有连接的设备。</nt-wrapper></td>
+    </tr>
+    
+    <tr>
+      <td>doctor</td>
+      <td><code class="language-plaintext highlighter-rouge">flutter doctor</code></td>
+      <td><nt-wrapper>显示相关已安装工具的信息。</nt-wrapper></td>
+    </tr>
+    
+    <tr>
+      <td>downgrade</td>
+      <td><code class="language-plaintext highlighter-rouge">flutter downgrade</code></td>
+      <td><nt-wrapper>将 Flutter 降级到当前渠道分支的上一个有效版本。</nt-wrapper></td>
+    </tr>
+    
+    <tr>
+      <td>drive</td>
+      <td><code class="language-plaintext highlighter-rouge">flutter drive</code></td>
+      <td><nt-wrapper>运行当前项目的 Flutter 测试。</nt-wrapper></td>
+    </tr>
+    
+    <tr>
+      <td>emulators</td>
+      <td><code class="language-plaintext highlighter-rouge">flutter emulators</code></td>
+      <td><nt-wrapper>列出、启动或创建模拟器。</nt-wrapper></td>
+    </tr>
+    
+    <tr>
+      <td>gen-l10n</td>
+      <td><code class="language-plaintext highlighter-rouge">flutter gen-l10n &lt;DIRECTORY&gt;</code></td>
+      <td><nt-wrapper>为 Flutter 项目生成 l10n 本地化。</nt-wrapper></td>
+    </tr>
+    
+    <tr>
+      <td>install</td>
+      <td><code class="language-plaintext highlighter-rouge">flutter install -d &lt;DEVICE_ID&gt;</code></td>
+      <td><nt-wrapper>在连接的设备上安装 Flutter 应用程序。</nt-wrapper></td>
+    </tr>
+    
+    <tr>
+      <td>logs</td>
+      <td><code class="language-plaintext highlighter-rouge">flutter logs</code></td>
+      <td><nt-wrapper>显示运行中的 Flutter 应用程序的日志内容。</nt-wrapper></td>
+    </tr>
+    
+    <tr>
+      <td>precache</td>
+      <td><code class="language-plaintext highlighter-rouge">flutter precache &lt;ARGUMENTS&gt;</code></td>
+      <td><nt-wrapper>下载并预缓存 Flutter 相关平台工具的二进制文件</nt-wrapper></td>
+    </tr>
+    
+    <tr>
+      <td>pub</td>
+      <td><code class="language-plaintext highlighter-rouge">flutter pub &lt;PUB_COMMAND&gt;</code></td>
+      <td><nt-wrapper>package 的相关操作命令。<br>该命令用来替代 <a href="https://dart.cn/tools/dart-pub"><code class="language-plaintext highlighter-rouge">dart pub</code></a>。</nt-wrapper></td>
+    </tr>
+    
+    <tr>
+      <td>run</td>
+      <td><code class="language-plaintext highlighter-rouge">flutter run &lt;DART_FILE&gt;</code></td>
+      <td><nt-wrapper>运行 Flutter 应用程序。</nt-wrapper></td>
+    </tr>
+    
+    <tr>
+      <td>screenshot</td>
+      <td><code class="language-plaintext highlighter-rouge">flutter screenshot</code></td>
+      <td><nt-wrapper>在连接的设备上对 Flutter 应用程序进行截图。</nt-wrapper></td>
+    </tr>
+    
+    <tr>
+      <td>symbolize</td>
+      <td><code class="language-plaintext highlighter-rouge">flutter symbolize --input=&lt;STACK_TRACK_FILE&gt;</code></td>
+      <td><nt-wrapper>读取并解析 Flutter 应用程序中 AOT 编译的堆栈跟踪信息。</nt-wrapper></td>
+    </tr>
+    
+    <tr>
+      <td>test</td>
+      <td><code class="language-plaintext highlighter-rouge">flutter test [&lt;DIRECTORY|DART_FILE&gt;]</code></td>
+      <td><nt-wrapper>运行测试<br>该命令用来替代 <a href="https://dart.cn/tools/dart-test"><code class="language-plaintext highlighter-rouge">dart test</code></a>。</nt-wrapper></td>
+    </tr>
+    
+    <tr>
+      <td>upgrade</td>
+      <td><code class="language-plaintext highlighter-rouge">flutter upgrade</code></td>
+      <td><nt-wrapper>升级你的 Flutter 版本。</nt-wrapper></td>
+    </tr>
+    
+  </tbody>
+</table>
