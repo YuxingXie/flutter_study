@@ -695,7 +695,7 @@ class SquareButtonState extends State<SquareButton> {
   }
 }
 ```
-
+这个类隐藏了状态的奥秘。
 
 ### 5.2 why Riverpod?
 
