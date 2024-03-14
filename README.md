@@ -649,9 +649,54 @@ GoRoute(
 话不多说，我就来研究下Riverpod，参考资料 https://riverpod.dev/docs/introduction/getting_started
 
 
-Riverpod是一个庞大的主题，我学了一小会发现不是一时半会能搞明白的，所以放弃了，但是学过的部分先留在这里。这一章先跳过。
+Riverpod是一个庞大的主题，我学了一小会发现不是一时半会能搞明白的，所以放弃了，但是学过的部分先留在这里。Riverpod就不研究了，但是Flutter本身的State管理我们还是要搞明白。
 
-### 5.1 why Riverpod?
+### 5.1 Flutter中的State
+
+现在我要设计一个按钮Widget，要求有几点：
+
+* 它能对点击做出反应;
+* 它传入的Widget垂直居中。
+
+好，下面是代码。
+```dart
+import 'package:flutter/material.dart';
+
+class SquareButton extends StatefulWidget {
+  final VoidCallback onPressed;
+  final Widget child;
+  final Color? color;
+  final double? padding;
+  const SquareButton(
+      {super.key,
+      required this.onPressed,
+      required this.child,
+      this.color,
+      this.padding});
+  @override
+  State<StatefulWidget> createState() => SquareButtonState();
+}
+
+class SquareButtonState extends State<SquareButton> {
+  @override
+  Widget build(BuildContext context) {
+    return Semantics(
+        container: true,
+        child: InkWell(
+            onTap: widget.onPressed,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                widget.child,
+              ],
+            )));
+  }
+}
+```
+
+
+### 5.2 why Riverpod?
 
 
 本节内容纯翻译自https://riverpod.dev/docs/introduction/why_riverpod
@@ -668,9 +713,9 @@ Riverpod (Provider的变体)是一个用于Flutter/Dart的响应式缓存框架�
 
 算了，大家还是自己去看吧。
 
-### 5.2 开始Riverpod
+### 5.3 开始Riverpod
 
-#### 5.2.1 安装
+#### 5.3.1 安装
 ```text
 flutter pub add flutter_riverpod
 flutter pub add riverpod_annotation
@@ -690,7 +735,7 @@ https://marketplace.visualstudio.com/items?itemName=robert-brunhage.flutter-rive
 
 本人向来不喜欢描述这些按部就班的事情，大家自己去弄吧。
 
-#### 5.2.2 hello world!
+#### 5.3.2 hello world!
 下面的代码如果出现红波浪：
 
 ```dart
@@ -755,9 +800,9 @@ class MyApp extends ConsumerWidget {
 我们可以用ref.watch(helloWorldProvider)获得“Hello world”这个字符串。这个helloWorldProvider又是啥呢？
 它定义在main.g.dart文件中，目前看不懂。
 
-### 5.3 Riverpod要点
+### 5.4 Riverpod要点
 
-#### 5.3.1 发送网络请求
+#### 5.4.1 发送网络请求
 
 <b>step1:设置ProviderScope</b>
 
@@ -1093,6 +1138,17 @@ $ dart compile exe --define=no_default_http_client=true ...
 * Multi-child layout widgets：多个子widgets
 * Sliver widgets：与滚动条相关
 
+### tip1:垂直居中
+```dart
+  Column(
+    mainAxisAlignment: MainAxisAlignment.center,
+    crossAxisAlignment: CrossAxisAlignment.center,
+    children: [
+      ...
+    ],
+  )
+```
+
 ## 第八章 主题
 
 ## 第九章 Flutter命令行
@@ -1247,3 +1303,18 @@ flutter --help devices
     </tr>
   </tbody>
 </table>
+
+## 第十章 实战一个项目
+
+初步构思一个小区交流app，有底部导航条，首页显示一些小区动态消息。其它还要什么页面边做边想。
+
+### 10.1 拆分一个类
+
+把类拆分的目的首先是简化类，其次是抽取出层级结构。
+
+### 10.2 项目目录结构
+
+习惯了java的包命名规范，到flutter后不习惯了。首先是java一般是一个文件一个类，其次是java中的MVC模型，领域模型，依赖注入、注解与零配置、静态资源等等都有成熟的模式，
+使得java程序的层次结构清晰。在flutter学习中，视图、逻辑、模型都没有分开，这给我一个艰巨的任务，就是理清这些类的用途，用好的文件层次结构来管理它们。
+另外java可以使用反射、代理等技术来实现一些框架级的编程，而dart中我暂时还未接触过反射，Google了一下，dart还是有类似反射的东西，我看看能不能搞个依赖注入框架，
+对一些项目运行期间可以存在单实例的类进行依赖注入。
