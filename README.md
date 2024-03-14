@@ -656,9 +656,10 @@ Riverpod是一个庞大的主题，我学了一小会发现不是一时半会能
 现在我要设计一个按钮Widget，要求有几点：
 
 * 它能对点击做出反应;
-* 它传入的Widget垂直居中。
+* 它能传入多个Widget；
+* 它传入的Widgets垂直居中。
 
-好，下面是代码。
+下面是代码:
 ```dart
 import 'package:flutter/material.dart';
 
