@@ -846,7 +846,7 @@ http package 提供了 http 请求最简单易用的方法。该 package 支持 
 
 部分平台需要额外的步骤。
 
-android:
+android: android/app/src/main/AndroidManifest.xml
 ```xml
 <manifest xmlns:android...>
  ...
