@@ -697,6 +697,104 @@ class SquareButtonState extends State<SquareButton> {
 ```
 这个类隐藏了状态的奥秘。
 
+#### 5.1.1 从一个错误理解state在flutter中的意义
+
+我写过一个ListView,想用ListView.build命名构造方法的itemBuilder函数的参数值来修改另一个变量的值，以此来在另一个Widget中显示。结果出错了，
+出错的地方是在setState方法执行时：
+
+```dart
+import 'package:flutter/material.dart';
+
+main() {
+  runApp(const PaginatedListView());
+}
+
+class PaginatedListView extends StatefulWidget {
+  const PaginatedListView({super.key});
+
+  @override
+  State<PaginatedListView> createState() => PaginatedListViewState();
+}
+
+class PaginatedListViewState extends State<PaginatedListView> {
+  final List<String> entries = ['A', 'B', 'C'];
+  final List<int> colorCodes = [600, 500, 100];
+  var scrollcontroller = ScrollController();
+  var message = '';
+
+  bool isLoading = false;
+
+  int page = 0;
+  var total = 20;
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+        home: Scaffold(
+      appBar: AppBar(
+        title: const Text("Pagination View"),
+      ),
+      body: Column(
+        children: <Widget>[
+          Container(
+            height: 50.0,
+            color: Colors.green,
+            child: const Center(
+              child: Text("message"),
+            ),
+          ),
+          Expanded(
+            child: ListView.builder(
+              itemCount: total,
+              itemBuilder: (context, index) {
+                return listTile(index);
+              },
+            ),
+          ),
+        ],
+      ),
+    ));
+  }
+
+  ListTile listTile(int index) {
+    setState(() {
+      message = "$index";
+    });
+    return ListTile(title: Text("Segment : $index"));
+  }
+
+  @override
+  void initState() {
+    //added the pagination function with listener
+    scrollcontroller.addListener(pagination);
+    super.initState();
+  }
+
+//_subCategoryModel only use for check the length of product
+
+  void pagination() {
+    if ((scrollcontroller.position.pixels ==
+        scrollcontroller.position.maxScrollExtent)) {
+      setState(() {
+        isLoading = true;
+        page += 1;
+        //add api for load the more data according to new page
+      });
+    }
+  }
+}
+
+```
+
+错误信息如下，请仔细阅读：
+```text
+Exception has occurred.
+FlutterError (setState() or markNeedsBuild() called during build.
+This PaginatedListView widget cannot be marked as needing to build because the framework is already in the process of building widgets. A widget can be marked as needing to be built during the build phase only if one of its ancestors is currently building. This exception is allowed because the framework builds parent widgets before children, which means a dirty descendant will always be built. Otherwise, the framework might not visit this widget during this build phase.
+The widget on which setState() or markNeedsBuild() was called was:
+  PaginatedListView
+The widget which was currently being built when the offending call was made was:
+  MediaQuery)
+```
 ### 5.2 why Riverpod?
 
 
