@@ -745,6 +745,7 @@ class PaginatedListViewState extends State<PaginatedListView> {
           Expanded(
             child: ListView.builder(
               itemCount: total,
+              controller: scrollcontroller,
               itemBuilder: (context, index) {
                 return listTile(index);
               },
