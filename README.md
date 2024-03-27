@@ -796,6 +796,10 @@ The widget on which setState() or markNeedsBuild() was called was:
 The widget which was currently being built when the offending call was made was:
   MediaQuery)
 ```
+翻译：这个PaginatedListView小部件不能被标记为需要构建，因为框架已经在构建小部件的过程中了。只有当一个小部件的祖先当前正在构建时，才能在构建阶段将其标记为需要构建。
+这个异常是允许的，因为框架在子部件之前构建父部件，这意味着总是会构建脏的后代部件。否则，框架可能不会在此构建阶段访问此小部件。
+
+
 ### 5.2 why Riverpod?
 
 
