@@ -1,5 +1,15 @@
 # flutter_study
 
+> ## 第一章 Widget
+
+> ## 第二章 主题
+
+> ## 第三章 交互
+
+> ## 第四章 导航 & 路由
+
+> ## 第三章 交互
+
 主要参考：https://flutter.cn/docs
 
 Flutter油管频道：https://www.youtube.com/playlist?list=PLjxrf2q8roU3wk7CDw4RfV3mEwOJbjx1k
@@ -638,6 +648,23 @@ GoRoute(
 大家可以去这里 https://pub.dev/documentation/go_router/latest/topics/Get%20started-topic.html 学习go_router。
 
 另外，资源、媒体、动画、过渡、设计、主题、无障碍、国际化，以及其它一些个Widget，我会放到最后几个章节，前面的章节先研究核心的内容。
+
+
+### 4.3 go_router
+
+在经历了一段时间的开发后，我受够了Navigator.push传递参数后，在目标路由上获取到null。可能怪我学艺不精，但是这么一个简单到爆的功能，系统的健壮度可信赖度却如此脆弱，
+实在不是一个靠谱的东西，思来想去研究一下go_router。
+
+初略看了一下，go_router和Navigator用法相似，所以用go_router替换Navigator不会对程序结构造成破坏。
+看了一下它定义路由的方式，可以使用类似restflul uri方式定义路由，可以带pathParameters和queryParameters，
+类似于"user/:id"，"user?id=myId"这种方式，也可以用字符串命名路由。传递简单数据的方式可以通过url路径传递，
+复杂点的Object数据用构造函数参数传递。
+
+文档在这里： https://pub.dev/documentation/go_router/latest/topics/Get%20started-topic.html
+
+有什么领悟或者要填坑，会回来补充。
+
+
 
 
 ## 第五章 状态管理
