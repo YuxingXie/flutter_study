@@ -36,7 +36,10 @@ Flutter 布局的核心机制是 widget。在 Flutter 中，几乎所有东西�
 
 
 
-### 1.1 布局widget
+
+### 1.1 官方文档文档上介绍的Widgets
+
+#### 1.1.1 布局widget
 
 先来这里 https://flutter.cn/docs/ui/widgets/layout 看看Flutter为我们提供了那些核心的布局Widget。
 可以看到总共有42个布局Widgets，被分为三组：
@@ -48,7 +51,7 @@ Flutter 布局的核心机制是 widget。在 Flutter 中，几乎所有东西�
 根据文档教程，我们需要选择一个叫Center的Widget来编写一个简单程序,我们发现它在Single-child layout widgets分组中。
 从分组的名字看，大概意思是这个布局只能有一个子Widget吧。它自己的名字Center也表明了这个布局Widget大概是用来是让UI居中布局的。
 
-### 1.2 其它widget
+#### 1.1.2 其它widget
 
 除了布局Widget外，其它肯定应该要包括UI Widget吧，至于还有没有其它类型的Widgets目前不清楚,也没必要现在就搞清楚。
 
@@ -65,7 +68,7 @@ Flutter 布局的核心机制是 widget。在 Flutter 中，几乎所有东西�
 
 我不想放弃文档的提纲，它可以让我清楚自己的学习路径，不过文档的内容得自己找资料去研究了。
 
-### 1.3 MaterialApp
+#### 1.1.3 MaterialApp
 
 它是一个Widget，可以作为最顶层的Widget存在，即程序入口main函数中运行的runApp方法传入的那个参数。
 ```dart
@@ -91,7 +94,7 @@ void main() {
   ));
 ```
 
-### 1.4 Scaffold
+#### 1.1.4 Scaffold
 
 前面说了Wideget可以是一个页面，通过阅读一些API代码，我认为Scaffold代表某一种页面。试着在runApp中直接传入一个Scaffold程序不出现窗口，把它放在一个MaterialApp中就能显示了：
 ```dart
@@ -113,6 +116,26 @@ void main() {
 Widget是在太多太杂了，我想在学习阶段一个个弄明白实在是没必要，最多再了解一下表单输入相关的Widgets，
 但也是碰到了案例再来学也不迟。对整套框架形成整体认识才是更重要的是，
 比如数据的传递，路由，前后端通信等还有很多可以想象得到的内容需要了解。所以这一章就先不做过多深入了。
+
+有些Widget必须在特定的直接父容器Widget里面，如：
+
+ Widget                      Parent Widget
+
+Expanded()               Row(), Column(), Flex()
+
+Flexible()               Row(), Column(), Flex()
+
+Positioned()                    Stack()
+
+TableCell()                     Table()
+
+### 1.2 官方文档文档上没有的Widgets
+
+#### 1.2.1 InkWell
+
+在Widget继承层次上比较靠前的Widget，支持各种手势触发函数，点击，拖动等等。
+
+#### 1.2.2 Positioned和Stack
 
 
 
