@@ -131,12 +131,13 @@ TableCell()                     Table()
 
 ### 1.2 官方文档文档上没有的Widgets
 
-#### 1.2.1 InkWell
+#### 1.2.1 InkWell和GestureDetector
 
-在Widget继承层次上比较靠前的Widget，支持各种手势触发函数，点击，拖动等等。
+在Widget继承层次上比较靠前的Widget，支持各种手势触发函数，点击，长点、双击等等。
+
+GestureDetector支持的手势更多，比如水平拖动，垂直拖动等。
 
 #### 1.2.2 Positioned和Stack
-
 
 
 ## 第二章 主题
