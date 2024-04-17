@@ -34,8 +34,28 @@ Widget的API: https://api.flutter-io.cn/flutter/widgets/widgets-library.html
 
 Flutter 布局的核心机制是 widget。在 Flutter 中，几乎所有东西都是 widget —— 甚至布局模型都是 widget。你在 Flutter 应用程序中看到的图像，图标和文本都是 widget。此外不能直接看到的也是 widget，例如用来排列、限制和对齐可见 widget 的行、列和网格。
 
+tips:Widget异常
 
+当widget出现异常信息，而且非常非常长，这个时候不要关闭异常面板，仔细阅读下里面的文本，你会学到很多，比如下面这段异常：
 
+```text
+FlutterError (RenderFlex children have non-zero flex but incoming height constraints are unbounded.
+When a column is in a parent that does not provide a finite height constraint, for example if it is in a vertical scrollable, it will try to shrink-wrap its children along the vertical axis. Setting a flex on a child (e.g. using Expanded) indicates that the child is to expand to fill the remaining space in the vertical direction.
+These two directives are mutually exclusive. If a parent is to shrink-wrap its child, the child cannot simultaneously expand to fit its parent.
+Consider setting mainAxisSize to MainAxisSize.min and using FlexFit.loose fits for the flexible children (using Flexible rather than Expanded). This will allow the flexible children to size themselves to less than the infinite remaining space they would otherwise be forced to take, and then will cause the RenderFlex to shrink-wrap the children rather than expanding to fit the maximum constraints provided by the parent.
+```
+翻译下：
+
+FlutterError (RenderFlex的子节点有非零的伸缩，但是传入的高度约束是无界的。)
+当列位于不提供有限高度约束的父列中时(例如，如果列位于垂直可滚动列中)，它(Column)将尝试沿着垂直轴收缩其子列。在子元素上设置伸缩(例如使用Expanded)表示子元素将展开以填充垂直方向上的剩余空间。
+这两个指令是相互排斥的。如果父进程要收缩其子进程，则子进程不能同时展开以适合其父进程。
+考虑将mainAxisSize设置为 MainAxisSize.min并使用FlexFit.loose来适应有弹性(flexible)的Children(使用Flexible而不是Expanded)。这将允许灵活的子元素调整自己的大小，使其小于他们将被迫占用的无限剩余空间，然后将导致RenderFlex收缩子元素，而不是扩展以适应父元素提供的最大约束。
+
+我理解一下：RenderFelx应该指那些可以带滚动条的Widgets，高度是没有约束的。把列(Column)放在它里面，RenderFelx里的Column会尽量压缩子元素的高度，好控制它们不要太高，所以Column有收缩的倾向。
+而有些跟它反着干的Widgets，比如Expanded,Spacer之类,它们想进来撑开高度霸占屏幕。如果在Column里放入这些霸屏的Widgets,Column还是要优先这些子元素的。当Column自己在固定高度的父元素中时，
+它自己的霸屏子元素顶多占满一屏，但Column位于高度无限带滚动条的RenderFelx中时，滚动条会被撑到无限大，所以这是不允许的。
+
+先能理解到这一步就足够了，至于有那些类型的Widgets带滚动条,那些能伸缩，可以慢慢去积累。
 
 ### 1.1 官方文档文档上介绍的Widgets
 
@@ -141,6 +161,8 @@ GestureDetector支持的手势更多，比如水平拖动，垂直拖动等。
 
 
 ## 第二章 主题
+
+### GlobalKey
 
 此章留白先
 
