@@ -1005,9 +1005,108 @@ void main() {
 
 听起来不错吗?让我们开始吧!
 
-不搞了，名堂太多了。
+照抄没意思，还不如直接看资料： https://riverpod.dev/zh-hans/docs/essentials/first_request
 
+以下只记录要点和体会。
 
+#### 关于provider函数
+
+它由@riverpod注解，具备如下超能力：
+
+* 保持缓存
+* 提供默认错误/加载处理
+* 可以被监听
+* 当某些数据发生变化时自动重新执行
+
+它有全局的名字，即它的函数名+Provider。比如函数名叫myFunction，则提供者变量名叫myFunctionProvider。
+
+</hr>
+
+问：ref参数是什么，如何定义它的类型？以文档里的ActivityRef类型举例说明。
+
+答：从目前所理解的内容看，大概是所有provider的一个引用，或者也可以说它是一个提供者的上下文。ActivityRef类型是自动生成的,
+只要你的IDE安装了插件，运行"dart run build_runner watch"，不要退出终端，每次保存代码的时候它会自动生成。记得在文件头部加上：
+```dart
+//根据需要修改xxx文件名
+part 'xxx.g.dart';
+```
+
+</hr>
+
+问：我们在widget中如何调用provider函数？如何传入ref变量实例？
+
+答：让你的widgets从StatelessWidget或StatefulWidget改为ConsumerWidget(简洁)，或让你的widget的build方法返回值由Widget变为Consumer，即外面包一层Consumer(不简洁):
+```dart
+class Home extends ConsumerWidget {
+  const Home({super.key});
+
+  @override
+  // 请注意“build”现在如何接收一个额外的参数：“ref”
+  Widget build(BuildContext context, WidgetRef ref) {
+    // 我们可以像使用“Consumer”一样，在小部件中使用“ref.watch”
+    final AsyncValue<Activity> activity = ref.watch(activityProvider);
+
+    // 渲染逻辑保持不变
+    return Center(/* ... */);
+  }
+}
+```
+或：
+```dart
+class Home extends StatelessWidget {
+  const Home({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Consumer(
+      builder: (context, ref, child) {
+        // 读取 activityProvider。如果没有准备开始，这将会开始一个网络请求。
+        // 通过使用 ref.watch，小组件将会在 activityProvider 更新时重建。
+        // 当下面的事情发生时，会更新小组件：
+        // - 响应从“正在加载”变为“数据/错误”
+        // - 请求重刷新
+        // - 结果被本地修改（例如执行副作用时）
+        // ...
+        final AsyncValue<Activity> activity = ref.watch(activityProvider);
+
+        return Center(
+          /// 由于网络请求是异步的并且可能会失败，我们需要处理错误和加载的状态。
+          /// 我们可以为此使用模式匹配。
+          /// 我们也可以使用 `if (activity.isLoading) { ... } else if (...)`
+          child: switch (activity) {
+            AsyncData(:final value) => Text('Activity: ${value.activity}'),
+            AsyncError() => const Text('Oops, something unexpected happened'),
+            _ => const CircularProgressIndicator(),
+          },
+        );
+      },
+    );
+  }
+}
+```
+
+</hr>
+
+问：如何把传统的Service类转换为provider？
+
+答：当 @riverpod 注解被放置在一个类上时，该类被称为“通知者程序”。但是不太推荐这样搞，因为一个提供者程序并不能提供多个方法让你访问网络，
+它只能在build方法中实现一个网络访问。最好的方法是把传统Service中的方法转为顶级函数。但如果要这样做，则照如下：
+
+假如你有个user_service.g.dart文件定义了UserService类，要改为provider，在类上加上@riverpod注解，并让它继承自_$UserService。类头部加上：
+```dart
+part 'user_service.g.dart';
+```
+按要求实现一个build方法，然后执行如下命令：
+```txt
+dart run build_runner watch
+```
+会自动生成user_service.g.dart文件，内含_$UserService类。
+
+</hr>
+
+问：riverpod是如何接管setState对状态的管理的？
+
+答：
 
 ## 第六章 数据调用和后端
 
