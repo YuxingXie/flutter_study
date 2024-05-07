@@ -1106,7 +1106,27 @@ dart run build_runner watch
 
 问：riverpod是如何接管setState对状态的管理的？
 
-答：
+答：通过一个类 with ChangeNotifier在provider和consumer之间通信。把你需要用state管理的类变量都放到这个ChangeNotifier中来，例：
+```dart
+class XXXChangeNotifier with ChangeNotifier {
+  //把原来需要状态管理的变量都放这里来，final变量别放进来,并分别给它们一个getter方法
+  bool _fetchEnd = false;
+  bool _toBottom = false;
+  bool _firstFetch = true;
+  bool _noAnyData = false;
+  int _first = 0;
+  bool get fetchEnd => _fetchEnd;
+  bool get toBottom => _toBottom;
+  bool get firstFetch => _firstFetch;
+  bool get noAnyData => _noAnyData;
+  int get first => _first;
+
+}
+```
+stop!这种方式好像复杂到没什么价值，看看下面的方法：
+
+用ConsumerWidget代替StatelessWidget,用ConsumerStatefulWidget代替StatefulWidget,用ConsumerState代替State。
+这时你发现你的代码完全不会报错，因为这些替代的类都是由被替代的类继承而来。
 
 ## 第六章 数据调用和后端
 
